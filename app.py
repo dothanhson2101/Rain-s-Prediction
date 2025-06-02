@@ -3,6 +3,18 @@ import pandas as pd
 import numpy as np
 import joblib
 
+def clean_special_values(df):
+    for col in default_values_full.keys():
+        if col in df.columns:
+            df[col] = df[col].replace({
+                "Calm": 0.0,
+                "#": np.nan,
+                "NA": np.nan,
+                "": np.nan
+            })
+            df[col] = pd.to_numeric(df[col], errors="ignore")
+    return df
+
 st.set_page_config(page_title="🌧️ Predict Rain App", layout="centered")
 st.title("🌧️ Predict Rain (RainTomorrow)")
 
@@ -160,6 +172,9 @@ else:
 
     if uploaded_file is not None:
         uploaded_df = pd.read_csv(uploaded_file)
+        
+        # Làm sạch tất cả cột đầu vào có thể chứa giá trị đặc biệt
+        uploaded_df = clean_special_values(uploaded_df)
         uploaded_df = fill_missing_with_defaults(uploaded_df)
 
         try:
